@@ -2,8 +2,8 @@ package com.cumpatomas.rickandmorty
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cumpatomas.rickandmorty.domain.GetCharacters
-import com.cumpatomas.rickandmorty.domain.model.CharModel
+import com.cumpatomas.rickandmorty.domain.model.Character
+import com.cumpatomas.rickandmorty.domain.repository.CharacterRepositoryInterface
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.FlowPreview
@@ -15,10 +15,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainActivityViewModel @Inject constructor(
-    private val getCharList: GetCharacters
+class CharactersListViewModel @Inject constructor(
+    private val getCharList: CharacterRepositoryInterface
 ) : ViewModel() {
-    private val _charList = MutableStateFlow(emptySet<CharModel>())
+    private val _charList = MutableStateFlow(emptyList<Character>())
     val charList = _charList.asStateFlow()
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
@@ -32,8 +32,9 @@ class MainActivityViewModel @Inject constructor(
         viewModelScope.launch(IO) {
             _loading.value = true
             launch {
-                _charList.value = getCharList.invoke("")
+                _charList.value = getCharList.getAllCharacters()
             }.join()
+            println("Characters: ${_charList.value}")
             _loading.value = false
             if (_charList.value.isEmpty()) {
                 _noResultsMessage.value = true
@@ -42,16 +43,16 @@ class MainActivityViewModel @Inject constructor(
     }
 
     suspend fun searchInList(query: String) {
-        _charList.value = emptySet()
+        _charList.value = emptyList()
 
         _noResultsMessage.value = false
         viewModelScope.launch(IO) {
             _loading.value = true
             launch {
                 if (query.isEmpty()) {
-                    _charList.value = getCharList.invoke("")
+                    _charList.value = getCharList.getAllCharacters()
                 } else {
-                    _charList.value = getCharList.invoke(query)
+                    _charList.value = getCharList.getCharactersByQuery(query)
                 }
             }.join()
             _loading.value = false
@@ -72,3 +73,4 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 }
+

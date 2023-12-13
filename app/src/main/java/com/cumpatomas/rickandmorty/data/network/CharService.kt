@@ -1,14 +1,15 @@
 package com.cumpatomas.rickandmorty.data.network
 
-import com.cumpatomas.rickandmorty.domain.model.JsonModel
+import com.cumpatomas.rickandmorty.data.datasource.character.remote.api.RemoteCharactersApi
+import com.cumpatomas.rickandmorty.data.datasource.character.remote.dto.CharacterResponseDto
 import javax.inject.Inject
 
-class CharService@Inject constructor(private val retrofit: CharactersApi) {
+class CharService@Inject constructor(private val retrofit: RemoteCharactersApi) {
 
     suspend fun getAllChars(
         query: String,
         page: String = ""
-    ): ResponseEvent<JsonModel> {
+    ): ResponseEvent<CharacterResponseDto> {
         return try {
             val url = when {
                 query.isEmpty() -> "character/?page=$page"

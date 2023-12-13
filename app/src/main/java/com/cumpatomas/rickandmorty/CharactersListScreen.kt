@@ -67,7 +67,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
 import com.cumpatomas.rickandmorty.data.network.ConnectivityObserver
 import com.cumpatomas.rickandmorty.data.network.NetworkConnectivityObserver
-import com.cumpatomas.rickandmorty.domain.model.CharModel
+import com.cumpatomas.rickandmorty.domain.model.Character
 import com.cumpatomas.rickandmorty.ui.theme.RickAndMortyTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -75,8 +75,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private lateinit var connectivityObserver: ConnectivityObserver
-    private val viewModel : MainActivityViewModel by viewModels()
-
+    private val viewModel: CharactersListViewModel by viewModels()
 
     @OptIn(ExperimentalComposeUiApi::class)
     @SuppressLint("StateFlowValueCalledInComposition")
@@ -84,8 +83,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-/*            ApplicationModule.initialiseApplicationContext(this.application)*/
-
             val charList = viewModel.charList.collectAsState()
             val loading = viewModel.loading.collectAsState()
             val noResultsMessage = viewModel.noResultsMessage.collectAsState()
@@ -124,8 +121,8 @@ class MainActivity : ComponentActivity() {
 )
 @Composable
 fun MainScreen(
-    viewModel: MainActivityViewModel,
-    charList: State<Set<CharModel>>,
+    viewModel: CharactersListViewModel,
+    charList: State<List<Character>>,
     loading: State<Boolean>,
     noResultsMessage: State<Boolean>,
     keyboardController: SoftwareKeyboardController?,
@@ -252,7 +249,7 @@ fun MainScreen(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CharCard(
-    char: CharModel,
+    char: Character,
     listState: LazyListState,
     index: Int,
     keyboardController: SoftwareKeyboardController?
@@ -322,7 +319,7 @@ fun CharCard(
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
-fun ItemWebView(char: CharModel) {
+fun ItemWebView(char: Character) {
     val loadingState = remember { mutableStateOf(true) }
     val coroutineScope = rememberCoroutineScope()
 

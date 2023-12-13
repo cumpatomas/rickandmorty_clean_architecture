@@ -1,6 +1,6 @@
 package com.cumpatomas.rickandmorty.di
 
-import com.cumpatomas.rickandmorty.data.network.CharactersApi
+import com.cumpatomas.rickandmorty.data.datasource.character.remote.api.RemoteCharactersApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,19 +13,17 @@ import java.util.concurrent.TimeUnit
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NetworkModule {
+object ApiModule {
 
-
-@Provides
-  fun provideRetrofit(okHttpClient: OkHttpClient): CharactersApi {
+    @Provides
+    fun provideRetrofit(okHttpClient: OkHttpClient): RemoteCharactersApi {
         return Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .baseUrl("https://rickandmortyapi.com/api/")
             .build()
-            .create(CharactersApi::class.java)
+            .create(RemoteCharactersApi::class.java)
     }
-
     @Provides
     fun provideOkHttpClient(): OkHttpClient {
 
@@ -38,5 +36,4 @@ object NetworkModule {
             .addInterceptor(interceptor)
             .build()
     }
-
 }
